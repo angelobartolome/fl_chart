@@ -844,30 +844,42 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     final leftTitles = targetData.titlesData.leftTitles;
     final leftInterval =
         leftTitles.interval ?? getEfficientInterval(viewSize.height, data.verticalDiff);
+
     if (leftTitles.showTitles) {
       var verticalSeek = data.minY;
       while (verticalSeek <= data.maxY) {
         if (leftTitles.checkToShowTitle(
             data.minY, data.maxY, leftTitles, leftInterval, verticalSeek)) {
           var x = 0 + getLeftOffsetDrawSize(holder);
+
           var y = getPixelY(verticalSeek, viewSize, holder);
 
           final text = leftTitles.getTitles(verticalSeek);
 
-          final span = TextSpan(style: leftTitles.getTextStyles(verticalSeek), text: text);
+          final span =
+              TextSpan(style: leftTitles.getTextStyles(verticalSeek).copyWith(), text: text);
+
           final tp = TextPainter(
               text: span,
               textAlign: TextAlign.center,
               textDirection: leftTitles.textDirection,
               textScaleFactor: holder.textScale);
-          tp.layout(maxWidth: getExtraNeededHorizontalSpace(holder));
-          x -= tp.width + leftTitles.margin;
+
+          if (leftTitles.internal) {
+            tp.layout(maxWidth: leftTitles.reservedSize);
+            x += leftTitles.margin;
+          } else {
+            tp.layout(maxWidth: getExtraNeededHorizontalSpace(holder));
+            x -= tp.width + leftTitles.margin;
+          }
+
           y -= tp.height / 2;
           canvasWrapper.save();
           canvasWrapper.translate(x + tp.width / 2, y + tp.height / 2);
           canvasWrapper.rotate(radians(leftTitles.rotateAngle));
           canvasWrapper.translate(-(x + tp.width / 2), -(y + tp.height / 2));
           y -= translateRotatedPosition(tp.width, leftTitles.rotateAngle);
+
           canvasWrapper.drawText(tp, Offset(x, y));
           canvasWrapper.restore();
         }
@@ -980,8 +992,13 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
               textScaleFactor: holder.textScale);
           tp.layout();
 
+          if (bottomTitles.internal) {
+            y -= tp.height + bottomTitles.margin;
+          } else {
+            y += bottomTitles.margin;
+          }
+
           x -= tp.width / 2;
-          y += bottomTitles.margin;
           canvasWrapper.save();
           canvasWrapper.translate(x + tp.width / 2, y + tp.height / 2);
           canvasWrapper.rotate(radians(bottomTitles.rotateAngle));
@@ -1318,12 +1335,12 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     var sum = super.getExtraNeededHorizontalSpace(holder);
     if (data.titlesData.show) {
       final leftSide = data.titlesData.leftTitles;
-      if (leftSide.showTitles) {
+      if (leftSide.showTitles && !leftSide.internal) {
         sum += leftSide.reservedSize + leftSide.margin;
       }
 
       final rightSide = data.titlesData.rightTitles;
-      if (rightSide.showTitles) {
+      if (rightSide.showTitles && !rightSide.internal) {
         sum += rightSide.reservedSize + rightSide.margin;
       }
     }
@@ -1346,7 +1363,7 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
       }
 
       final bottomSide = data.titlesData.bottomTitles;
-      if (bottomSide.showTitles) {
+      if (bottomSide.showTitles && !bottomSide.internal) {
         sum += bottomSide.reservedSize + bottomSide.margin;
       }
     }
@@ -1362,6 +1379,9 @@ class LineChartPainter extends AxisChartPainter<LineChartData> {
     var sum = super.getLeftOffsetDrawSize(holder);
 
     final leftTitles = data.titlesData.leftTitles;
+
+    if (leftTitles.internal) return 0;
+
     if (data.titlesData.show && leftTitles.showTitles) {
       sum += leftTitles.reservedSize + leftTitles.margin;
     }

@@ -132,12 +132,13 @@ abstract class AxisChartPainter<D extends AxisChartData> extends BaseChartPainte
 
     if (data.axisTitleData.show) {
       final leftSide = data.axisTitleData.leftTitle;
-      if (leftSide.showTitle) {
+
+      if (leftSide.showTitle && !leftSide.internal) {
         sum += leftSide.reservedSize + leftSide.margin;
       }
 
       final rightSide = data.axisTitleData.rightTitle;
-      if (rightSide.showTitle) {
+      if (rightSide.showTitle && !rightSide.internal) {
         sum += rightSide.reservedSize + rightSide.margin;
       }
     }

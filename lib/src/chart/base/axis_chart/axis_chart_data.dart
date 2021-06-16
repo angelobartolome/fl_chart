@@ -46,7 +46,7 @@ abstract class AxisChartData extends BaseChartData with EquatableMixin {
     Color? backgroundColor,
     FlBorderData? borderData,
     required FlTouchData touchData,
-  })  : gridData = gridData ?? FlGridData(),
+  })   : gridData = gridData ?? FlGridData(),
         axisTitleData = axisTitleData,
         rangeAnnotations = rangeAnnotations ?? RangeAnnotations(),
         minX = minX,
@@ -122,6 +122,9 @@ class AxisTitle with EquatableMixin {
   /// You can show or hide it using [showTitle],
   final bool showTitle;
 
+  /// You can show or hide it using [showTitle],
+  final bool internal;
+
   /// Determines the showing text.
   final String titleText;
 
@@ -151,6 +154,7 @@ class AxisTitle with EquatableMixin {
   /// [margin] determines margin of this title.
   AxisTitle({
     bool? showTitle,
+    bool? internal,
     String? titleText,
     double? reservedSize,
     TextStyle? textStyle,
@@ -158,6 +162,7 @@ class AxisTitle with EquatableMixin {
     TextAlign? textAlign,
     double? margin,
   })  : showTitle = showTitle ?? false,
+        internal = internal ?? false,
         titleText = titleText ?? '',
         reservedSize = reservedSize ?? 14,
         textStyle = textStyle ??
@@ -256,6 +261,7 @@ bool defaultCheckToShowTitle(
 /// Holds data for showing each side titles (a title per each axis value).
 class SideTitles with EquatableMixin {
   final bool showTitles;
+  final bool internal;
   final GetTitleFunction getTitles;
   final double reservedSize;
   final GetTitleTextStyleFunction getTextStyles;
@@ -288,6 +294,7 @@ class SideTitles with EquatableMixin {
   /// you can change rotation of drawing titles using [rotateAngle].
   SideTitles({
     bool? showTitles,
+    bool? internal,
     GetTitleFunction? getTitles,
     double? reservedSize,
     GetTitleTextStyleFunction? getTextStyles,
@@ -297,6 +304,7 @@ class SideTitles with EquatableMixin {
     double? rotateAngle,
     CheckToShowTitle? checkToShowTitle,
   })  : showTitles = showTitles ?? false,
+        internal = internal ?? false,
         getTitles = getTitles ?? defaultGetTitle,
         reservedSize = reservedSize ?? 22,
         getTextStyles = getTextStyles ?? defaultGetTitleTextStyle,
